@@ -7,5 +7,5 @@ Webhook for Dialogflow for the course Conversational Interfaces: Practice.
 3. Download and install ngrok: https://dl.equinox.io/ngrok/ngrok/stable
 4. Run ngrok: `ngrok http 8000 --region=eu`
 5. Copy the `https` url into Dialogflow (webhook url)
-6. Run the server with `uvicorn main:app --reload`
+6. Run the server with `uvicorn main:app --reload` (make sure it's using the same port as ngrok, 8000 is default so should be good)
 7. Test it out with invoking an intent that calls the webhook (make sure it's enabled for the intent, probably also enable the 'slot filling', otherwise you cannot access the entities/parameters from the intent)
