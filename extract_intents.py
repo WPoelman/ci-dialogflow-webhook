@@ -1,9 +1,13 @@
 from pathlib import Path
 import json
+import sys
 
 
 def main():
-    intent_dir = Path('../CIPAudiobooks/intents')
+    if len(sys.argv) < 2:
+        raise ValueError("Please provide the path to the intents directory.")
+
+    intent_dir = Path(sys.argv[1])
     result = dict()
     for intent_file in intent_dir.glob("*.json"):
         with open(intent_file) as f:
