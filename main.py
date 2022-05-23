@@ -32,52 +32,62 @@ def create_mp3_response(mp3_url: str, book_title: str, icon_url: str = None):
 
 def read_preface_handler(request):
     # book_title
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def books_by_author_handler(request):
     # author
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def look_up_search_word_handler(request):
     # search_word
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def remove_favorite_book_handler(request):
     # book_title
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def play_book_author_handler(request):
     # author
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def play_book_genre_handler(request):
     # genre
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def author_of_book_title_handler(request):
     # book_title
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def present_books_with_genre_handler(request):
     # genre
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def opinion_positive_handler(request):
     # person
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def play_book_title_handler(request):
     # book_title
-    pass
+
+    return DEFAULT_RESPONSE
 
 
 def go_to_chapter_handler(request):
@@ -119,9 +129,9 @@ INTENTS = {
 
 @app.post("/")
 def read_root(payload: dict = Body(...)):
-    intent_id = payload["queryResult"]["intent"]["name"]
+    intent_name = payload["queryResult"]["intent"]["name"]
 
-    items = INTENTS.get(intent_id, lambda _: DEFAULT_RESPONSE)(payload)
+    items = INTENTS.get(intent_name, lambda _: DEFAULT_RESPONSE)(payload)
 
     result = {
         "payload": {
