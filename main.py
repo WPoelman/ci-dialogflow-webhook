@@ -1,12 +1,16 @@
 from typing import Any, Dict, List
 from fastapi import Body, FastAPI
 from pydantic import BaseModel
+import json
 
 app = FastAPI()
 
 DEFAULT_RESPONSE = [
     {"simpleResponse": {"textToSpeech": "I did not get that."}}
 ]
+
+with open('data/db.json') as f:
+    DB = json.load(f)
 
 
 class IntentRequest(BaseModel):

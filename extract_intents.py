@@ -36,7 +36,7 @@ def main():
                 "parameters": [param["name"] for param in params]
             }
 
-    with open('intents_and_parameters.json', 'w') as f:
+    with open('data/intents_and_parameters.json', 'w') as f:
         json.dump(result, f, indent=4)
 
 
