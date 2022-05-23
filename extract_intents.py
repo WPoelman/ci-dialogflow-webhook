@@ -17,8 +17,17 @@ def main():
             if isinstance(intent, list):
                 continue
 
+            # Only keep intents that require the webhook
+            if not intent.get("webhookUsed", None):
+                continue
+
             # We need the name to register the function
             if not (intent_name := intent.get("name", None)):
+                continue
+
+            # Filter out invalid names
+            if " " in intent_name:
+                print(f"Skipped {intent_name}, invalid name")
                 continue
 
             if len(intent["responses"]) > 1:
