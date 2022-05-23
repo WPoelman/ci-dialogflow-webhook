@@ -130,6 +130,7 @@ INTENTS = {
 @app.post("/")
 def read_root(payload: dict = Body(...)):
     intent_name = payload["queryResult"]["intent"]["name"]
+    # TODO: payload["queryResult"]["outputContexts"] for contexts
 
     items = INTENTS.get(intent_name, lambda _: DEFAULT_RESPONSE)(payload)
 
