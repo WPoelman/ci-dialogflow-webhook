@@ -35,13 +35,30 @@ def create_mp3_response(mp3_url: str, book_title: str, icon_url: str = None):
 
 
 def create_tts_response(text: str):
-    return {"simpleResponse": {"textToSpeech": text}}
+    result = {
+        "simpleResponse": {
+            "textToSpeech": text,
+            "displayText": text,
+        }
+    }
+    return result
 
 
 def books_by_author_handler(payload):
     # author
+    if not (author := payload["queryResult"]["parameters"].get("author", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    titles = [
+        book['title'] for book in DB if book['author'] == author
+    ]
+
+    if len(titles) == 0:
+        return DEFAULT_RESPONSE
+
+    msg = f"The books for this author are: {', '.join(titles)}"
+
+    return create_tts_response(msg)
 
 
 def play_book_author_handler(payload):
@@ -136,6 +153,7 @@ INTENTS = {
     "progress_book": progress_book_handler,
     "time_to_finish": time_to_finish_handler,
     "unread_chapters": unread_chapters_handler,
+    "available_books": available_books_handler,
 }
 
 
@@ -144,12 +162,20 @@ def read_root(payload: dict = Body(...)):
     intent_name = payload["queryResult"]["intent"]["displayName"]
     # TODO: payload["queryResult"]["outputContexts"] for contexts
 
+    print(f"GOT INTENT: {intent_name}")
+
     items = INTENTS.get(intent_name, lambda _: DEFAULT_RESPONSE)(payload)
+    # The final response expects a list of responses, but we might return a
+    # single items from the handlers
+    if isinstance(items, dict):
+        items = [items]
+
+    print(f"RESPONSE: {items}")
 
     result = {
         "payload": {
             "google": {
-                "expectUserResponse": False,  # TODO: make this dynamic per intent?
+                "expectUserResponse": True,  # TODO: make this dynamic per intent?
                 "richResponse": {"items": items},
             }
         }
