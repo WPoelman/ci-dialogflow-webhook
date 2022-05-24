@@ -33,13 +33,9 @@ def create_mp3_response(mp3_url: str, book_title: str, icon_url: str = None):
     }
     return result
 
-    # Here we need to extract the information from the request and find the
-    # correct information for it.
-# mp3_url = "https://ia800603.us.archive.org/14/items/annakarenina_mas_1202_librivox/annakarenina_001_tolstoy.mp3"
-# icon_url = "https://ia601601.us.archive.org/26/items/LibrivoxCdCoverArt15/anna_karenina_1202.jpg"
-# book_title = "Anna Karenina"
-#
-# response = create_mp3_response(mp3_url, book_title, icon_url)
+
+def create_tts_response(text: str):
+    return {"simpleResponse": {"textToSpeech": text}}
 
 
 def books_by_author_handler(payload):
@@ -93,6 +89,13 @@ def book_genre_handler(payload):
 def go_to_chapter_handler(payload):
     # chapter_number
 
+    # Here we need to extract the information from the request and find the
+    # correct information for it.
+    # mp3_url = "https://ia800603.us.archive.org/14/items/annakarenina_mas_1202_librivox/annakarenina_001_tolstoy.mp3"
+    # icon_url = "https://ia601601.us.archive.org/26/items/LibrivoxCdCoverArt15/anna_karenina_1202.jpg"
+    # book_title = "Anna Karenina"
+    #
+    # response = create_mp3_response(mp3_url, book_title, icon_url)
     return DEFAULT_RESPONSE
 
 
