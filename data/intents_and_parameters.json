@@ -1,22 +1,7 @@
 {
-    "read_preface": {
-        "parameters": [
-            "book_title"
-        ]
-    },
     "books_by_author": {
         "parameters": [
             "author"
-        ]
-    },
-    "look_up_search_word": {
-        "parameters": [
-            "search_word"
-        ]
-    },
-    "remove_favorite_book": {
-        "parameters": [
-            "book_title"
         ]
     },
     "play_book_author": {
@@ -29,6 +14,11 @@
             "genre"
         ]
     },
+    "number_of_chapters": {
+        "parameters": [
+            "current_book"
+        ]
+    },
     "author_of_book_title": {
         "parameters": [
             "book_title"
@@ -39,14 +29,14 @@
             "genre"
         ]
     },
-    "opinion_positive": {
-        "parameters": [
-            "person"
-        ]
-    },
     "play_book_title": {
         "parameters": [
             "book_title"
+        ]
+    },
+    "book_genre": {
+        "parameters": [
+            "current_book"
         ]
     },
     "go_to_chapter": {
@@ -54,11 +44,20 @@
             "chapter_number"
         ]
     },
-    "opinion_negative": {
+    "progress_book": {
         "parameters": [
-            "character_name",
-            "book_title",
-            "chapter_number"
+            "current_book"
         ]
+    },
+    "time_to_finish": {
+        "parameters": [
+            "current_book"
+        ]
+    },
+    "unread_chapters": {
+        "parameters": []
+    },
+    "available_books": {
+        "parameters": []
     }
 }
