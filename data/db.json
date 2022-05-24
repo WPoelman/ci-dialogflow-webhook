@@ -1,32 +1,43 @@
 [
-{
-  "title": "Anna Karenina",
-  "author":  "Leo Tolstoy",
-  "genres":  ["General Fiction", "Historical Fiction"],
-  "mp3url": "https://ia800603.us.archive.org/14/items/annakarenina_mas_1202_librivox/annakarenina_0$$_tolstoy.mp3",
-  "iconurl": "https://www.archive.org/download/LibrivoxCdCoverArt15/anna_karenina_1202.jpg",
-  "reader": "Mary Ann",
-  "chapters": 34,
-  "summary": "Two love stories are set against the backdrop of high society in Tsarist Russia. Anna awakes from a loveless marriage to find herself drawn irresistibly to the dashing cavalry officer, Count Vronsky. Levin struggles with self-esteem, and even flees to the country, before gaining courage to return and offer himself to the beautiful and pure Kitty. Through troubled courtships, reconciliations, marriage and the birth of each one’s first child, Anna and Levin experience joy and despair as they each struggle to find their place in the world and meaning for their lives.",
-},
-{
-  "title": "Resurrection Book 1",
-  "author":  "Leo Tolstoy",
-  "genres":  ["General Fiction"],
-  "mp3url": "https://ia902609.us.archive.org/19/items/resurrection_1_1002_librivox/resurrection1_$$_tolstoy.mp3",
-  "iconurl": "https://www.archive.org/download/LibrivoxCdCoverArt16/resurrection_1_1204.jpg",
-  "reader": "Leni",
-  "chapters": 59,
-  "summary": "Resurrection is the last of Tolstoy's major fiction works published in his lifetime. Tolstoy intended the novel as an exposition of injustice of man-made laws and the hypocrisy of institutionalized church. It was first published serially in the magazine Niva as an effort to raise funds for the resettlement of the Dukhobors. The story concerns a nobleman named Nekhlyudov, who seeks redemption for a sin committed years earlier. His brief affair with a maid resulted in her being fired and ending up in prostitution. The book treats his attempts to help her out of her current misery, but also focuses on his personal mental and moral struggle.",
-},
-{
-  "title": "Black Beauty",
-  "author":  "Anna Sewell",
-  "genres":  ["Animals", "Nature"],
-  "mp3url": "https://ia903406.us.archive.org/3/items/blackbeauty_librivox/blackbeauty_$$_sewell.mp3",
-  "iconurl": "https://archive.org/download/blackbeauty_librivox/Black_Beauty_Autobiography_Horse_1104.jpg",
-  "reader": "Kara Shallenberg",
-  "chapters": 49,
-  "summary": "Black Beauty is Anna Sewell’s first and only novel. The story is told in the “first person” (or first horse) as an autobiographical memoir of a high-bred horse named Black Beauty, from his carefree days as a foal on an English farm, to his difficult life pulling cabs in London, to his happy retirement in the country. Along the way, he meets with many hardships and recounts many tales of cruelty and kindness. Each short chapter recounts an incident in Black Beauty’s life containing a lesson or moral typically related to the kindness, sympathy, and understanding treatment of horses.",
-},
+  {
+    "title": "Anna Karenina",
+    "author": "Leo Tolstoy",
+    "genres": [
+      "General Fiction",
+      "Historical Fiction"
+    ],
+    "mp3url": "https://ia800603.us.archive.org/14/items/annakarenina_mas_1202_librivox/annakarenina_0$$_tolstoy.mp3",
+    "iconurl": "https://www.archive.org/download/LibrivoxCdCoverArt15/anna_karenina_1202.jpg",
+    "reader": "Mary Ann",
+    "chapters": 34,
+    "summary": "Two love stories are set against the backdrop of high society in Tsarist Russia. Anna awakes from a loveless marriage to find herself drawn irresistibly to the dashing cavalry officer, Count Vronsky. Levin struggles with self-esteem, and even flees to the country, before gaining courage to return and offer himself to the beautiful and pure Kitty. Through troubled courtships, reconciliations, marriage and the birth of each one’s first child, Anna and Levin experience joy and despair as they each struggle to find their place in the world and meaning for their lives.",
+    "runtime": 315
+  },
+  {
+    "title": "Resurrection Book 1",
+    "author": "Leo Tolstoy",
+    "genres": [
+      "General Fiction"
+    ],
+    "mp3url": "https://ia902609.us.archive.org/19/items/resurrection_1_1002_librivox/resurrection1_$$_tolstoy.mp3",
+    "iconurl": "https://www.archive.org/download/LibrivoxCdCoverArt16/resurrection_1_1204.jpg",
+    "reader": "Leni",
+    "chapters": 59,
+    "summary": "Resurrection is the last of Tolstoy's major fiction works published in his lifetime. Tolstoy intended the novel as an exposition of injustice of man-made laws and the hypocrisy of institutionalized church. It was first published serially in the magazine Niva as an effort to raise funds for the resettlement of the Dukhobors. The story concerns a nobleman named Nekhlyudov, who seeks redemption for a sin committed years earlier. His brief affair with a maid resulted in her being fired and ending up in prostitution. The book treats his attempts to help her out of her current misery, but also focuses on his personal mental and moral struggle.",
+    "runtime": 531
+  },
+  {
+    "title": "Black Beauty",
+    "author": "Anna Sewell",
+    "genres": [
+      "Animals",
+      "Nature"
+    ],
+    "mp3url": "https://ia903406.us.archive.org/3/items/blackbeauty_librivox/blackbeauty_$$_sewell.mp3",
+    "iconurl": "https://archive.org/download/blackbeauty_librivox/Black_Beauty_Autobiography_Horse_1104.jpg",
+    "reader": "Kara Shallenberg",
+    "chapters": 49,
+    "summary": "Black Beauty is Anna Sewell’s first and only novel. The story is told in the “first person” (or first horse) as an autobiographical memoir of a high-bred horse named Black Beauty, from his carefree days as a foal on an English farm, to his difficult life pulling cabs in London, to his happy retirement in the country. Along the way, he meets with many hardships and recounts many tales of cruelty and kindness. Each short chapter recounts an incident in Black Beauty’s life containing a lesson or moral typically related to the kindness, sympathy, and understanding treatment of horses.",
+    "runtime": 374
+  }
 ]
