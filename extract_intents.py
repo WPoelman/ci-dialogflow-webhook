@@ -36,11 +36,6 @@ def main():
 
             params = intent['responses'][0]["parameters"]
 
-            # We skip intents that don't have parameters, we assume the webhook does
-            # not have to deal with this.
-            if len(params) == 0:
-                continue
-
             result[intent_name] = {
                 "parameters": [param["name"] for param in params]
             }
