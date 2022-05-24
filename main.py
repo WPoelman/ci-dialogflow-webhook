@@ -2,13 +2,17 @@ from typing import Any, Dict, List
 from fastapi import Body, FastAPI
 from pydantic import BaseModel
 import json
+import random
 
 app = FastAPI()
 
 DEFAULT_RESPONSE = [
     {"simpleResponse": {"textToSpeech": "I did not get that."}}
 ]
+CHAPTER_PLACEHOLDER = "$$"
 
+# NOTE: our "db" is highly inefficient and dumb. We mainly use this since it's
+# a demo!
 with open('data/db.json') as f:
     DB = json.load(f)
 
@@ -63,14 +67,34 @@ def books_by_author_handler(payload):
 
 def play_book_author_handler(payload):
     # author
+    if not (author := payload["queryResult"]["parameters"].get("author", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    books = [book for book in DB if book['author'] == author]
+
+    if len(books) == 0:
+        return DEFAULT_RESPONSE
+
+    book = random.choice(books)
+    mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, "01")
+
+    return create_mp3_response(mp3_url, book['title'], book['iconurl'])
 
 
 def play_book_genre_handler(payload):
     # genre
+    if not (genre := payload["queryResult"]["parameters"].get("genre", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    books = [book for book in DB if genre in book['genres']]
+
+    if len(books) == 0:
+        return DEFAULT_RESPONSE
+
+    book = random.choice(books)
+    mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, "01")
+
+    return create_mp3_response(mp3_url, book['title'], book['iconurl'])
 
 
 def number_of_chapters_handler(payload):
@@ -136,8 +160,10 @@ def unread_chapters_handler(payload):
 
 def available_books_handler(payload):
     # NO PARAMETERS
+    titles = [book['title'] for book in DB]
+    msg = f"You have the following books available: {', '.join(titles)}"
 
-    return DEFAULT_RESPONSE
+    return create_tts_response(msg)
 
 
 INTENTS = {
@@ -162,7 +188,8 @@ def read_root(payload: dict = Body(...)):
     intent_name = payload["queryResult"]["intent"]["displayName"]
     # TODO: payload["queryResult"]["outputContexts"] for contexts
 
-    print(f"GOT INTENT: {intent_name}")
+    print(f"GOT INTENT: {intent_name}\n")
+    print(f"GOT INTENT: {payload}\n")
 
     items = INTENTS.get(intent_name, lambda _: DEFAULT_RESPONSE)(payload)
     # The final response expects a list of responses, but we might return a
@@ -170,12 +197,12 @@ def read_root(payload: dict = Body(...)):
     if isinstance(items, dict):
         items = [items]
 
-    print(f"RESPONSE: {items}")
+    print(f"RESPONSE: {items}\n")
 
     result = {
         "payload": {
             "google": {
-                "expectUserResponse": True,  # TODO: make this dynamic per intent?
+                "expectUserResponse": False,  # TODO: make this dynamic per intent?
                 "richResponse": {"items": items},
             }
         }
