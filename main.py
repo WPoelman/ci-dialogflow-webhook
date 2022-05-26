@@ -311,6 +311,8 @@ def read_root(payload: dict = Body(...)):
     if isinstance(items, dict):
         items = [items]
 
+    print(f"RESPONSE: {json.dumps(items, indent=2)}\n")
+
     result = {
         "payload": {
             "google": {
@@ -319,7 +321,5 @@ def read_root(payload: dict = Body(...)):
             }
         }
     }
-
-    print(f"RESPONSE: {json.dumps(items, indent=2)}\n")
 
     return result
