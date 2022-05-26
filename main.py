@@ -11,8 +11,10 @@ DEFAULT_RESPONSE = [
 ]
 CHAPTER_PLACEHOLDER = "$$"
 
-# NOTE: our "db" is highly inefficient and dumb. We mainly use this since it's
-# a demo!
+# NOTE: our "db" is highly inefficient and dumb. We mainly use this approach
+# since it's a demo!
+# TODO: normalize the data in some way so searching is more robust
+# (names all lower case for instance)
 with open('data/db.json') as f:
     DB = json.load(f)
 
@@ -53,9 +55,7 @@ def books_by_author_handler(payload):
     if not (author := payload["queryResult"]["parameters"].get("author", None)):
         return DEFAULT_RESPONSE
 
-    titles = [
-        book['title'] for book in DB if book['author'] == author
-    ]
+    titles = [book['title'] for book in DB if book['author'] == author]
 
     if len(titles) == 0:
         return DEFAULT_RESPONSE
@@ -99,57 +99,171 @@ def play_book_genre_handler(payload):
 
 def number_of_chapters_handler(payload):
     # current_book
+    # TODO: this probably needs to come from the context, not sure though:
+    #   payload["queryResult"]["outputContexts"]
+    if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    chapters = None
+    for book in DB:
+        if book['title'] == current_book:
+            chapters = book['chapters']
+            break
+
+    if not chapters:
+        return DEFAULT_RESPONSE
+
+    msg = f"{current_book} has {chapters} chapters."
+
+    return create_tts_response(msg)
 
 
 def author_of_book_title_handler(payload):
     # book_title
+    if not (book_title := payload["queryResult"]["parameters"].get("book_title", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    author = None
+    for book in DB:
+        if book['title'] == book_title:
+            author = book['author']
+            break
+
+    if not author:
+        return DEFAULT_RESPONSE
+
+    msg = f"{author} is the author of {book_title}."
+
+    return create_tts_response(msg)
 
 
 def present_books_with_genre_handler(payload):
     # genre
+    if not (genre := payload["queryResult"]["parameters"].get("genre", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    titles = [book['title'] for book in DB if genre in book['genres']]
+
+    if len(titles) == 0:
+        return DEFAULT_RESPONSE
+
+    msg = f"You have the following books with genre {genre}: {', '.join(titles)}."
+
+    return create_tts_response(msg)
 
 
 def play_book_title_handler(payload):
     # book_title
+    if not (book_title := payload["queryResult"]["parameters"].get("book_title", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    book = None
+    for b in DB:
+        if b['title'] == book_title:
+            book = b
+            break
+
+    if not book:
+        return DEFAULT_RESPONSE
+
+    mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, "01")
+
+    return create_mp3_response(mp3_url, book['title'], book['iconurl'])
 
 
 def book_genre_handler(payload):
     # current_book
+    # TODO: this probably needs to come from the context, not sure though:
+    #   payload["queryResult"]["outputContexts"]
+    if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    genres = None
+    for book in DB:
+        if book['title'] == current_book:
+            genres = book['genres']
+            break
+
+    if not genres:
+        return DEFAULT_RESPONSE
+
+    item = "genres" if len(genres) > 1 else "genre"
+    msg = f"{current_book} has {item}: {', '.join(genres)}."
+
+    return create_tts_response(msg)
 
 
 def go_to_chapter_handler(payload):
     # chapter_number
+    # TODO: we need to get the current_book from somewhere here. Probably context again.
+    if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
+        return DEFAULT_RESPONSE
+    if not (chapter_number := payload["queryResult"]["parameters"].get("chapter_number", None)):
+        return DEFAULT_RESPONSE
 
-    # Here we need to extract the information from the request and find the
-    # correct information for it.
-    # mp3_url = "https://ia800603.us.archive.org/14/items/annakarenina_mas_1202_librivox/annakarenina_001_tolstoy.mp3"
-    # icon_url = "https://ia601601.us.archive.org/26/items/LibrivoxCdCoverArt15/anna_karenina_1202.jpg"
-    # book_title = "Anna Karenina"
-    #
-    # response = create_mp3_response(mp3_url, book_title, icon_url)
-    return DEFAULT_RESPONSE
+    book = None
+    for b in DB:
+        if b['title'] == current_book:
+            book = b
+            break
+
+    if not book:
+        return DEFAULT_RESPONSE
+
+    chapter = int(chapter_number)
+    if (chapter > book['chapters']) or (chapter < 1):
+        return DEFAULT_RESPONSE
+
+    # NOTE: currently we assume chapters range from 01-99!
+    mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, f"{chapter:02d}")
+
+    return create_mp3_response(mp3_url, book['title'], book['iconurl'])
 
 
 def progress_book_handler(payload):
     # current_book
+    # TODO: we also need to know how far along the mp3 file is, again context?
+    if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
+        return DEFAULT_RESPONSE
+    if not (minutes_played := payload["queryResult"]["parameters"].get("minutes_played", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    book = None
+    for b in DB:
+        if b['title'] == current_book:
+            book = b
+            break
+
+    if not book:
+        return DEFAULT_RESPONSE
+
+    progress = int(100 * (int(minutes_played) / book['runtime']))
+    msg = f"You are {progress}% into {current_book}."
+
+    return create_tts_response(msg)
 
 
 def time_to_finish_handler(payload):
     # current_book
+    # TODO: we also need to know how far along the mp3 file is, again context?
+    if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
+        return DEFAULT_RESPONSE
+    if not (minutes_played := payload["queryResult"]["parameters"].get("minutes_played", None)):
+        return DEFAULT_RESPONSE
 
-    return DEFAULT_RESPONSE
+    book = None
+    for b in DB:
+        if b['title'] == current_book:
+            book = b
+            break
+
+    if not book:
+        return DEFAULT_RESPONSE
+
+    left = book['runtime'] - int(minutes_played)
+    msg = f"{current_book} has {left} minutes left."
+
+    return create_tts_response(msg)
 
 
 def unread_chapters_handler(payload):
@@ -186,18 +300,16 @@ INTENTS = {
 @app.post("/")
 def read_root(payload: dict = Body(...)):
     intent_name = payload["queryResult"]["intent"]["displayName"]
-    # TODO: payload["queryResult"]["outputContexts"] for contexts
+    # NOTE: payload["queryResult"]["outputContexts"] for contexts
 
     print(f"GOT INTENT: {intent_name}\n")
-    print(f"GOT INTENT: {payload}\n")
+    print(f"GOT payload: {json.dumps(payload, indent=2)}\n")
 
     items = INTENTS.get(intent_name, lambda _: DEFAULT_RESPONSE)(payload)
     # The final response expects a list of responses, but we might return a
     # single items from the handlers
     if isinstance(items, dict):
         items = [items]
-
-    print(f"RESPONSE: {items}\n")
 
     result = {
         "payload": {
@@ -207,5 +319,7 @@ def read_root(payload: dict = Body(...)):
             }
         }
     }
+
+    print(f"RESPONSE: {json.dumps(items, indent=2)}\n")
 
     return result
