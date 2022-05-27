@@ -6,9 +6,7 @@ import random
 
 app = FastAPI()
 
-DEFAULT_RESPONSE = [
-    {"simpleResponse": {"textToSpeech": "I did not get that."}}
-]
+DEFAULT_RESPONSE = "I did not get that."
 CHAPTER_PLACEHOLDER = "$$"
 
 # NOTE: our "db" is highly inefficient and dumb. We mainly use this approach
@@ -18,6 +16,8 @@ CHAPTER_PLACEHOLDER = "$$"
 with open('data/db.json') as f:
     DB = json.load(f)
 
+def match(a: str, b: str):
+    return a.lower().strip() == b.lower().strip()
 
 class IntentRequest(BaseModel):
     pass
@@ -53,12 +53,12 @@ def create_tts_response(text: str):
 def books_by_author_handler(payload):
     # author
     if not (author := payload["queryResult"]["parameters"].get("author", None)):
-        return DEFAULT_RESPONSE
+        return None
 
-    titles = [book['title'] for book in DB if book['author'] == author]
+    titles = [book['title'] for book in DB if match(book['author'], author)]
 
     if len(titles) == 0:
-        return DEFAULT_RESPONSE
+        return None
 
     msg = f"The books for this author are: {', '.join(titles)}"
 
@@ -68,12 +68,12 @@ def books_by_author_handler(payload):
 def play_book_author_handler(payload):
     # author
     if not (author := payload["queryResult"]["parameters"].get("author", None)):
-        return DEFAULT_RESPONSE
+        return None
 
-    books = [book for book in DB if book['author'] == author]
+    books = [book for book in DB if match(book['author'], author)]
 
     if len(books) == 0:
-        return DEFAULT_RESPONSE
+        return None
 
     book = random.choice(books)
     mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, "01")
@@ -84,12 +84,12 @@ def play_book_author_handler(payload):
 def play_book_genre_handler(payload):
     # genre
     if not (genre := payload["queryResult"]["parameters"].get("genre", None)):
-        return DEFAULT_RESPONSE
+        return None
 
-    books = [book for book in DB if genre in book['genres']]
+    books = [book for book in DB if any(match(genre, g) for g in book['genres'])]
 
     if len(books) == 0:
-        return DEFAULT_RESPONSE
+        return None
 
     book = random.choice(books)
     mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, "01")
@@ -102,16 +102,16 @@ def number_of_chapters_handler(payload):
     # TODO: this probably needs to come from the context, not sure though:
     #   payload["queryResult"]["outputContexts"]
     if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
-        return DEFAULT_RESPONSE
+        return None
 
     chapters = None
     for book in DB:
-        if book['title'] == current_book:
+        if match(book['title'], current_book):
             chapters = book['chapters']
             break
 
     if not chapters:
-        return DEFAULT_RESPONSE
+        return None
 
     msg = f"{current_book} has {chapters} chapters."
 
@@ -121,16 +121,16 @@ def number_of_chapters_handler(payload):
 def author_of_book_title_handler(payload):
     # book_title
     if not (book_title := payload["queryResult"]["parameters"].get("book_title", None)):
-        return DEFAULT_RESPONSE
+        return None
 
     author = None
     for book in DB:
-        if book['title'] == book_title:
+        if match(book['title'], book_title):
             author = book['author']
             break
 
     if not author:
-        return DEFAULT_RESPONSE
+        return None
 
     msg = f"{author} is the author of {book_title}."
 
@@ -140,12 +140,12 @@ def author_of_book_title_handler(payload):
 def present_books_with_genre_handler(payload):
     # genre
     if not (genre := payload["queryResult"]["parameters"].get("genre", None)):
-        return DEFAULT_RESPONSE
+        return None
 
-    titles = [book['title'] for book in DB if genre in book['genres']]
+    titles = [book['title'] for book in DB if any(match(genre, g) for g in book['genres'])]
 
     if len(titles) == 0:
-        return DEFAULT_RESPONSE
+        return None
 
     msg = f"You have the following books with genre {genre}: {', '.join(titles)}."
 
@@ -155,16 +155,16 @@ def present_books_with_genre_handler(payload):
 def play_book_title_handler(payload):
     # book_title
     if not (book_title := payload["queryResult"]["parameters"].get("book_title", None)):
-        return DEFAULT_RESPONSE
+        return None
 
     book = None
     for b in DB:
-        if b['title'] == book_title:
+        if match(b['title'], book_title):
             book = b
             break
 
     if not book:
-        return DEFAULT_RESPONSE
+        return None
 
     mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, "01")
 
@@ -176,16 +176,16 @@ def book_genre_handler(payload):
     # TODO: this probably needs to come from the context, not sure though:
     #   payload["queryResult"]["outputContexts"]
     if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
-        return DEFAULT_RESPONSE
+        return None
 
     genres = None
     for book in DB:
-        if book['title'] == current_book:
+        if match(book['title'], current_book):
             genres = book['genres']
             break
 
     if not genres:
-        return DEFAULT_RESPONSE
+        return None
 
     item = "genres" if len(genres) > 1 else "genre"
     msg = f"{current_book} has {item}: {', '.join(genres)}."
@@ -197,22 +197,22 @@ def go_to_chapter_handler(payload):
     # chapter_number
     # TODO: we need to get the current_book from somewhere here. Probably context again.
     if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
-        return DEFAULT_RESPONSE
+        return None
     if not (chapter_number := payload["queryResult"]["parameters"].get("chapter_number", None)):
-        return DEFAULT_RESPONSE
+        return None
 
     book = None
     for b in DB:
-        if b['title'] == current_book:
+        if match(b['title'], current_book):
             book = b
             break
 
     if not book:
-        return DEFAULT_RESPONSE
+        return None
 
     chapter = int(chapter_number)
     if (chapter > book['chapters']) or (chapter < 1):
-        return DEFAULT_RESPONSE
+        return None
 
     # NOTE: currently we assume chapters range from 01-99!
     mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, f"{chapter:02d}")
@@ -224,18 +224,18 @@ def progress_book_handler(payload):
     # current_book
     # TODO: we also need to know how far along the mp3 file is, again context?
     if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
-        return DEFAULT_RESPONSE
+        return None
     if not (minutes_played := payload["queryResult"]["parameters"].get("minutes_played", None)):
-        return DEFAULT_RESPONSE
+        return None
 
     book = None
     for b in DB:
-        if b['title'] == current_book:
+        if match(b['title'], current_book):
             book = b
             break
 
     if not book:
-        return DEFAULT_RESPONSE
+        return None
 
     progress = int(100 * (int(minutes_played) / book['runtime']))
     msg = f"You are {progress}% into {current_book}."
@@ -247,18 +247,18 @@ def time_to_finish_handler(payload):
     # current_book
     # TODO: we also need to know how far along the mp3 file is, again context?
     if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
-        return DEFAULT_RESPONSE
+        return None
     if not (minutes_played := payload["queryResult"]["parameters"].get("minutes_played", None)):
-        return DEFAULT_RESPONSE
+        return None
 
     book = None
     for b in DB:
-        if b['title'] == current_book:
+        if match(b['title'], current_book):
             book = b
             break
 
     if not book:
-        return DEFAULT_RESPONSE
+        return None
 
     left = book['runtime'] - int(minutes_played)
     msg = f"{current_book} has {left} minutes left."
@@ -269,7 +269,7 @@ def time_to_finish_handler(payload):
 def unread_chapters_handler(payload):
     # NO PARAMETERS
 
-    return DEFAULT_RESPONSE
+    return None
 
 
 def available_books_handler(payload):
@@ -305,18 +305,21 @@ def read_root(payload: dict = Body(...)):
     print(f"GOT INTENT: {intent_name}\n")
     print(f"GOT payload: {json.dumps(payload, indent=2)}\n")
 
-    items = INTENTS.get(intent_name, lambda _: DEFAULT_RESPONSE)(payload)
+    if not (items := INTENTS.get(intent_name, lambda _: None)(payload)):
+        fallback_msg = payload["queryResult"].get("fulfillmentText", DEFAULT_RESPONSE)
+        items = create_tts_response(fallback_msg)
+
     # The final response expects a list of responses, but we might return a
     # single items from the handlers
-    if isinstance(items, dict):
-        items = [items]
+    # if isinstance(items, dict):
+        # items = [items]
 
     print(f"RESPONSE: {json.dumps(items, indent=2)}\n")
 
     result = {
         "payload": {
             "google": {
-                "expectUserResponse": False,  # TODO: make this dynamic per intent?
+                "expectUserResponse": True,  # TODO: make this dynamic per intent?
                 "richResponse": {"items": items},
             }
         }
