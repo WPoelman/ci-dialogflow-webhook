@@ -74,7 +74,10 @@ def play_book_author_handler(payload):
     book = random.choice(books)
     mp3_url = book["mp3url"].replace(CHAPTER_PLACEHOLDER, "01")
 
-    return create_mp3_response(mp3_url, book["title"], book["iconurl"])
+    return [
+        create_tts_response(f"Now playing {book['title']}"),
+        create_mp3_response(mp3_url, book["title"], book["iconurl"]),
+    ]
 
 
 def play_book_genre_handler(payload):
@@ -91,7 +94,10 @@ def play_book_genre_handler(payload):
     book = random.choice(books)
     mp3_url = book["mp3url"].replace(CHAPTER_PLACEHOLDER, "01")
 
-    return create_mp3_response(mp3_url, book["title"], book["iconurl"])
+    return [
+        create_tts_response(f"Now playing {book['title']}"),
+        create_mp3_response(mp3_url, book["title"], book["iconurl"]),
+    ]
 
 
 def number_of_chapters_handler(payload):
@@ -219,7 +225,10 @@ def go_to_chapter_handler(payload):
     # NOTE: currently we assume chapters range from 01-99!
     mp3_url = book["mp3url"].replace(CHAPTER_PLACEHOLDER, f"{chapter:02d}")
 
-    return create_mp3_response(mp3_url, book["title"], book["iconurl"])
+    return [
+        create_tts_response(f"Now playing chapter {chapter}"),
+        create_mp3_response(mp3_url, book["title"], book["iconurl"]),
+    ]
 
 
 def progress_book_handler(payload):
@@ -322,7 +331,7 @@ def read_root(payload: dict = Body(...)):
                 "expectUserResponse": True,
                 "richResponse": {
                     "items": items,
-                    "suggestions": [{"title": "Stop"}]
+                    "suggestions": [{"title": "Exit"}]
                 }
             }
         }
