@@ -1,3 +1,4 @@
+from copy import copy
 from typing import Any, Dict, List
 from fastapi import Body, FastAPI
 from pydantic import BaseModel
@@ -11,13 +12,13 @@ CHAPTER_PLACEHOLDER = "$$"
 
 # NOTE: our "db" is highly inefficient and dumb. We mainly use this approach
 # since it's a demo!
-# TODO: normalize the data in some way so searching is more robust
-# (names all lower case for instance)
-with open('data/db.json') as f:
+with open("data/db.json") as f:
     DB = json.load(f)
+
 
 def match(a: str, b: str):
     return a.lower().strip() == b.lower().strip()
+
 
 class IntentRequest(BaseModel):
     pass
@@ -41,12 +42,7 @@ def create_mp3_response(mp3_url: str, book_title: str, icon_url: str = None):
 
 
 def create_tts_response(text: str):
-    result = {
-        "simpleResponse": {
-            "textToSpeech": text,
-            "displayText": text,
-        }
-    }
+    result = {"simpleResponse": {"textToSpeech": text, "displayText": text}}
     return result
 
 
@@ -55,7 +51,7 @@ def books_by_author_handler(payload):
     if not (author := payload["queryResult"]["parameters"].get("author", None)):
         return None
 
-    titles = [book['title'] for book in DB if match(book['author'], author)]
+    titles = [book["title"] for book in DB if match(book["author"], author)]
 
     if len(titles) == 0:
         return None
@@ -70,15 +66,15 @@ def play_book_author_handler(payload):
     if not (author := payload["queryResult"]["parameters"].get("author", None)):
         return None
 
-    books = [book for book in DB if match(book['author'], author)]
+    books = [book for book in DB if match(book["author"], author)]
 
     if len(books) == 0:
         return None
 
     book = random.choice(books)
-    mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, "01")
+    mp3_url = book["mp3url"].replace(CHAPTER_PLACEHOLDER, "01")
 
-    return create_mp3_response(mp3_url, book['title'], book['iconurl'])
+    return create_mp3_response(mp3_url, book["title"], book["iconurl"])
 
 
 def play_book_genre_handler(payload):
@@ -86,15 +82,16 @@ def play_book_genre_handler(payload):
     if not (genre := payload["queryResult"]["parameters"].get("genre", None)):
         return None
 
-    books = [book for book in DB if any(match(genre, g) for g in book['genres'])]
+    books = [book for book in DB if any(
+        match(genre, g) for g in book["genres"])]
 
     if len(books) == 0:
         return None
 
     book = random.choice(books)
-    mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, "01")
+    mp3_url = book["mp3url"].replace(CHAPTER_PLACEHOLDER, "01")
 
-    return create_mp3_response(mp3_url, book['title'], book['iconurl'])
+    return create_mp3_response(mp3_url, book["title"], book["iconurl"])
 
 
 def number_of_chapters_handler(payload):
@@ -106,8 +103,8 @@ def number_of_chapters_handler(payload):
 
     chapters = None
     for book in DB:
-        if match(book['title'], current_book):
-            chapters = book['chapters']
+        if match(book["title"], current_book):
+            chapters = book["chapters"]
             break
 
     if not chapters:
@@ -125,8 +122,8 @@ def author_of_book_title_handler(payload):
 
     author = None
     for book in DB:
-        if match(book['title'], book_title):
-            author = book['author']
+        if match(book["title"], book_title):
+            author = book["author"]
             break
 
     if not author:
@@ -142,7 +139,9 @@ def present_books_with_genre_handler(payload):
     if not (genre := payload["queryResult"]["parameters"].get("genre", None)):
         return None
 
-    titles = [book['title'] for book in DB if any(match(genre, g) for g in book['genres'])]
+    titles = [
+        book["title"] for book in DB if any(match(genre, g) for g in book["genres"])
+    ]
 
     if len(titles) == 0:
         return None
@@ -159,16 +158,19 @@ def play_book_title_handler(payload):
 
     book = None
     for b in DB:
-        if match(b['title'], book_title):
+        if match(b["title"], book_title):
             book = b
             break
 
     if not book:
         return None
 
-    mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, "01")
+    mp3_url = book["mp3url"].replace(CHAPTER_PLACEHOLDER, "01")
 
-    return create_mp3_response(mp3_url, book['title'], book['iconurl'])
+    return [
+        create_tts_response(f"Now playing {book['title']}"),
+        create_mp3_response(mp3_url, book["title"], book["iconurl"]),
+    ]
 
 
 def book_genre_handler(payload):
@@ -180,8 +182,8 @@ def book_genre_handler(payload):
 
     genres = None
     for book in DB:
-        if match(book['title'], current_book):
-            genres = book['genres']
+        if match(book["title"], current_book):
+            genres = book["genres"]
             break
 
     if not genres:
@@ -203,7 +205,7 @@ def go_to_chapter_handler(payload):
 
     book = None
     for b in DB:
-        if match(b['title'], current_book):
+        if match(b["title"], current_book):
             book = b
             break
 
@@ -211,13 +213,13 @@ def go_to_chapter_handler(payload):
         return None
 
     chapter = int(chapter_number)
-    if (chapter > book['chapters']) or (chapter < 1):
+    if (chapter > book["chapters"]) or (chapter < 1):
         return None
 
     # NOTE: currently we assume chapters range from 01-99!
-    mp3_url = book['mp3url'].replace(CHAPTER_PLACEHOLDER, f"{chapter:02d}")
+    mp3_url = book["mp3url"].replace(CHAPTER_PLACEHOLDER, f"{chapter:02d}")
 
-    return create_mp3_response(mp3_url, book['title'], book['iconurl'])
+    return create_mp3_response(mp3_url, book["title"], book["iconurl"])
 
 
 def progress_book_handler(payload):
@@ -230,14 +232,14 @@ def progress_book_handler(payload):
 
     book = None
     for b in DB:
-        if match(b['title'], current_book):
+        if match(b["title"], current_book):
             book = b
             break
 
     if not book:
         return None
 
-    progress = int(100 * (int(minutes_played) / book['runtime']))
+    progress = int(100 * (int(minutes_played) / book["runtime"]))
     msg = f"You are {progress}% into {current_book}."
 
     return create_tts_response(msg)
@@ -253,14 +255,14 @@ def time_to_finish_handler(payload):
 
     book = None
     for b in DB:
-        if match(b['title'], current_book):
+        if match(b["title"], current_book):
             book = b
             break
 
     if not book:
         return None
 
-    left = book['runtime'] - int(minutes_played)
+    left = book["runtime"] - int(minutes_played)
     msg = f"{current_book} has {left} minutes left."
 
     return create_tts_response(msg)
@@ -274,7 +276,7 @@ def unread_chapters_handler(payload):
 
 def available_books_handler(payload):
     # NO PARAMETERS
-    titles = [book['title'] for book in DB]
+    titles = [book["title"] for book in DB]
     msg = f"You have the following books available: {', '.join(titles)}"
 
     return create_tts_response(msg)
@@ -304,25 +306,28 @@ def read_root(payload: dict = Body(...)):
 
     print(f"GOT INTENT: {intent_name}\n")
     print(f"GOT payload: {json.dumps(payload, indent=2)}\n")
-
     if not (items := INTENTS.get(intent_name, lambda _: None)(payload)):
-        fallback_msg = payload["queryResult"].get("fulfillmentText", DEFAULT_RESPONSE)
+        fallback_msg = payload["queryResult"].get(
+            "fulfillmentText", DEFAULT_RESPONSE)
         items = create_tts_response(fallback_msg)
 
-    # The final response expects a list of responses, but we might return a
-    # single items from the handlers
-    # if isinstance(items, dict):
-        # items = [items]
-
-    print(f"RESPONSE: {json.dumps(items, indent=2)}\n")
+    # The final response expects a list of responses, so we assume the handlers
+    # return a single item.
+    if isinstance(items, dict):
+        items = [items]
 
     result = {
         "payload": {
             "google": {
-                "expectUserResponse": True,  # TODO: make this dynamic per intent?
-                "richResponse": {"items": items},
+                "expectUserResponse": True,
+                "richResponse": {
+                    "items": items,
+                    "suggestions": [{"title": "Stop"}]
+                }
             }
         }
     }
+
+    print(f"RESPONSE: {json.dumps(result, indent=2)}\n")
 
     return result
