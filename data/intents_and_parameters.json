@@ -59,5 +59,10 @@
     },
     "available_books": {
         "parameters": []
+    },
+    "summarize_book": {
+        "parameters": [
+            "book_title"
+        ]
     }
 }
