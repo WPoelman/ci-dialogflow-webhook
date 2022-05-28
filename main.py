@@ -291,6 +291,25 @@ def available_books_handler(payload):
     return create_tts_response(msg)
 
 
+def summarize_book_handler(payload):
+    # book_title
+    if not (book_title := payload["queryResult"]["parameters"].get("book_title", None)):
+        return None
+
+    summary = None
+    for book in DB:
+        if match(book["title"], book_title):
+            summary = book["summary"]
+            break
+
+    if not summary:
+        return None
+
+    msg = f"Here is a summary of {book_title}: {summary}."
+
+    return create_tts_response(msg)
+
+
 INTENTS = {
     "books_by_author": books_by_author_handler,
     "play_book_author": play_book_author_handler,
@@ -305,6 +324,7 @@ INTENTS = {
     "time_to_finish": time_to_finish_handler,
     "unread_chapters": unread_chapters_handler,
     "available_books": available_books_handler,
+    "summarize_book": summarize_book_handler,
 }
 
 
