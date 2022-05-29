@@ -128,14 +128,14 @@ def author_of_book_title_handler(payload):
 
     author = None
     for book in DB:
-        if match(book["title"], book_title):
+        if match(book["title"], book_title[0]):  # Note: index to avoid data type mismatch (str/list)
             author = book["author"]
             break
 
     if not author:
         return None
 
-    msg = f"{author} is the author of {book_title}."
+    msg = f"{author} is the author of {book_title[0]}."
 
     return create_tts_response(msg)
 
@@ -297,15 +297,15 @@ def summarize_book_handler(payload):
         return None
 
     summary = None
-    for book in DB:
-        if match(book["title"], book_title):
-            summary = book["summary"]
+    for b in DB:
+        if match(b["title"], book_title[0]):  # Note: index to avoid data type mismatch (str/list)
+            summary = b["summary"]
             break
 
     if not summary:
         return None
 
-    msg = f"Here is a summary of {book_title}: {summary}."
+    msg = f"Here is a summary of {book_title[0]}: {summary}."
 
     return create_tts_response(msg)
 
