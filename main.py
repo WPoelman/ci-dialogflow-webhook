@@ -20,6 +20,12 @@ def match(a: str, b: str):
     return a.lower().strip() == b.lower().strip()
 
 
+def ensure_str(item):
+    if isinstance(item, list):
+        return item[0]
+    return item
+
+
 class IntentRequest(BaseModel):
     pass
 
@@ -133,17 +139,18 @@ def author_of_book_title_handler(payload):
     if not (book_title := payload["queryResult"]["parameters"].get("book_title", None)):
         return None
 
+    book_title = ensure_str(book_title)
+
     author = None
     for book in DB:
-        # Note: index to avoid data type mismatch (str/list)
-        if match(book["title"], book_title[0]):
+        if match(book["title"], book_title):
             author = book["author"]
             break
 
     if not author:
         return None
 
-    msg = f"{author} is the author of {book_title[0]}."
+    msg = f"{author} is the author of {book_title}."
 
     return create_tts_response(msg)
 
@@ -304,16 +311,18 @@ def summarize_book_handler(payload):
     if not (book_title := payload["queryResult"]["parameters"].get("book_title", None)):
         return None
 
+    book_title = ensure_str(book_title)
+
     summary = None
     for b in DB:
-        if match(b["title"], book_title[0]):  # Note: index to avoid data type mismatch (str/list)
+        if match(b["title"], book_title):  # Note: index to avoid data type mismatch (str/list)
             summary = b["summary"]
             break
 
     if not summary:
         return None
 
-    msg = f"Here is a summary of {book_title[0]}: {summary}."
+    msg = f"Here is a summary of {book_title}: {summary}."
 
     return create_tts_response(msg)
 
