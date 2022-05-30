@@ -218,15 +218,23 @@ def book_genre_handler(payload):
 
 def go_to_chapter_handler(payload):
     # chapter_number
-    # TODO: we need to get the current_book from somewhere here. Probably context again.
-    if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
-        return None
-    if not (chapter_number := payload["queryResult"]["parameters"].get("chapter_number", None)):
+    session = payload['session']
+    context_key = f'{session}/contexts/book_title_context'
+    book_title, chapter_number = None, None
+
+    for context in payload['queryResult']['outputContexts']:
+        if context['name'] == context_key:
+            book_title = context['parameters'].get('book_title', None)
+            chapter_number = context['parameters'].get('chapter_number', None)
+            if book_title and chapter_number:
+                break
+
+    if (not book_title) or (not chapter_number):
         return None
 
     book = None
     for b in DB:
-        if match(b["title"], current_book):
+        if match(b["title"], book_title):
             book = b
             break
 
