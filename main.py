@@ -102,21 +102,28 @@ def play_book_genre_handler(payload):
 
 def number_of_chapters_handler(payload):
     # current_book
-    # TODO: this probably needs to come from the context, not sure though:
-    #   payload["queryResult"]["outputContexts"]
-    if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
+    session = payload['session']
+    context_key = f'{session}/contexts/book_title_context'
+    book_title = None
+
+    for context in payload['queryResult']['outputContexts']:
+        if context['name'] == context_key:
+            if book_title := context['parameters'].get('book_title', None):
+                break
+
+    if not book_title:
         return None
 
     chapters = None
     for book in DB:
-        if match(book["title"], current_book):
+        if match(book["title"], book_title):
             chapters = book["chapters"]
             break
 
     if not chapters:
         return None
 
-    msg = f"{current_book} has {chapters} chapters."
+    msg = f"{book_title} has {chapters} chapters."
 
     return create_tts_response(msg)
 
@@ -128,7 +135,8 @@ def author_of_book_title_handler(payload):
 
     author = None
     for book in DB:
-        if match(book["title"], book_title[0]):  # Note: index to avoid data type mismatch (str/list)
+        # Note: index to avoid data type mismatch (str/list)
+        if match(book["title"], book_title[0]):
             author = book["author"]
             break
 

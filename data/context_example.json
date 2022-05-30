@@ -1,0 +1,157 @@
+{
+    "responseId": "d2e43715-0b80-438e-baec-a0289eb594b4-42a8fb1c",
+    "queryResult": {
+        "queryText": "play Anna Karenina",
+        "action": "Play",
+        "parameters": {
+            "book_title": "Anna Karenina"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "I am not able to play Anna Karenina right now",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "I am not able to play Anna Karenina right now"
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/cipaudiobooks-hwh9/agent/sessions/ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp/contexts/book_title_context",
+                "lifespanCount": 5,
+                "parameters": {
+                    "book_title": "Anna Karenina",
+                    "book_title.original": "Anna Karenina"
+                }
+            },
+            {
+                "name": "projects/cipaudiobooks-hwh9/agent/sessions/ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp/contexts/actions_capability_screen_output",
+                "parameters": {
+                    "book_title": "Anna Karenina",
+                    "book_title.original": "Anna Karenina"
+                }
+            },
+            {
+                "name": "projects/cipaudiobooks-hwh9/agent/sessions/ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp/contexts/actions_capability_media_response_audio",
+                "parameters": {
+                    "book_title": "Anna Karenina",
+                    "book_title.original": "Anna Karenina"
+                }
+            },
+            {
+                "name": "projects/cipaudiobooks-hwh9/agent/sessions/ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp/contexts/actions_capability_account_linking",
+                "parameters": {
+                    "book_title": "Anna Karenina",
+                    "book_title.original": "Anna Karenina"
+                }
+            },
+            {
+                "name": "projects/cipaudiobooks-hwh9/agent/sessions/ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp/contexts/actions_capability_web_browser",
+                "parameters": {
+                    "book_title": "Anna Karenina",
+                    "book_title.original": "Anna Karenina"
+                }
+            },
+            {
+                "name": "projects/cipaudiobooks-hwh9/agent/sessions/ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp/contexts/actions_capability_audio_output",
+                "parameters": {
+                    "book_title": "Anna Karenina",
+                    "book_title.original": "Anna Karenina"
+                }
+            },
+            {
+                "name": "projects/cipaudiobooks-hwh9/agent/sessions/ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp/contexts/google_assistant_input_type_voice",
+                "parameters": {
+                    "book_title": "Anna Karenina",
+                    "book_title.original": "Anna Karenina"
+                }
+            },
+            {
+                "name": "projects/cipaudiobooks-hwh9/agent/sessions/ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "book_title": "Anna Karenina",
+                    "book_title.original": "Anna Karenina"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/cipaudiobooks-hwh9/agent/intents/07800230-c0cf-44bd-95e3-8eabd4a72468",
+            "displayName": "play_book_title"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "google",
+        "version": "2",
+        "payload": {
+            "user": {
+                "locale": "en-GB",
+                "userVerificationStatus": "VERIFIED"
+            },
+            "conversation": {
+                "conversationId": "ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp",
+                "type": "ACTIVE",
+                "conversationToken": "[]"
+            },
+            "inputs": [
+                {
+                    "intent": "actions.intent.TEXT",
+                    "rawInputs": [
+                        {
+                            "inputType": "VOICE",
+                            "query": "play Anna Karenina"
+                        }
+                    ],
+                    "arguments": [
+                        {
+                            "name": "text",
+                            "rawText": "play Anna Karenina",
+                            "textValue": "play Anna Karenina"
+                        }
+                    ]
+                }
+            ],
+            "surface": {
+                "capabilities": [
+                    {
+                        "name": "actions.capability.SCREEN_OUTPUT"
+                    },
+                    {
+                        "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+                    },
+                    {
+                        "name": "actions.capability.ACCOUNT_LINKING"
+                    },
+                    {
+                        "name": "actions.capability.WEB_BROWSER"
+                    },
+                    {
+                        "name": "actions.capability.AUDIO_OUTPUT"
+                    }
+                ]
+            },
+            "isInSandbox": true,
+            "availableSurfaces": [
+                {
+                    "capabilities": [
+                        {
+                            "name": "actions.capability.AUDIO_OUTPUT"
+                        },
+                        {
+                            "name": "actions.capability.WEB_BROWSER"
+                        },
+                        {
+                            "name": "actions.capability.SCREEN_OUTPUT"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "session": "projects/cipaudiobooks-hwh9/agent/sessions/ABwppHHG5e1QOydUSWqCxmlNaHoJPjyFgetJIjRP9v1nqo4nHFqXmZ_AZ5PGb2SnkqQW3nFqaRSJAwPf_mvwJZrp"
+}
