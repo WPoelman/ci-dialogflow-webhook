@@ -26,6 +26,32 @@ def ensure_str(item):
     return item
 
 
+def get_current_book(payload):
+    """
+    Gets the current book title from the context, if it's there and return our
+    database entry for that book.
+    """
+    session = payload['session']
+    context_key = f'{session}/contexts/book_title_context'
+    book_title = None
+
+    for context in payload['queryResult']['outputContexts']:
+        if context['name'] == context_key:
+            if book_title := context['parameters'].get('book_title', None):
+                break
+
+    if not book_title:
+        return None
+
+    book = None
+    for b in DB:
+        if match(b["title"], book_title):
+            book = b
+            break
+
+    return book
+
+
 class IntentRequest(BaseModel):
     pass
 
@@ -109,29 +135,11 @@ def play_book_genre_handler(payload):
 
 
 def number_of_chapters_handler(payload):
-    # current_book
-    session = payload['session']
-    context_key = f'{session}/contexts/book_title_context'
-    book_title = None
-
-    for context in payload['queryResult']['outputContexts']:
-        if context['name'] == context_key:
-            if book_title := context['parameters'].get('book_title', None):
-                break
-
-    if not book_title:
+    # current_book from context
+    if not (book := get_current_book(payload)):
         return None
 
-    chapters = None
-    for book in DB:
-        if match(book["title"], book_title):
-            chapters = book["chapters"]
-            break
-
-    if not chapters:
-        return None
-
-    msg = f"{book_title} has {chapters} chapters."
+    msg = f"{book['title']} has {book['chapters']} chapters."
 
     return create_tts_response(msg)
 
@@ -197,23 +205,13 @@ def play_book_title_handler(payload):
 
 
 def book_genre_handler(payload):
-    # current_book
-    # TODO: this probably needs to come from the context, not sure though:
-    #   payload["queryResult"]["outputContexts"]
-    if not (current_book := payload["queryResult"]["parameters"].get("current_book", None)):
+    # current_book from context
+    if not (book := get_current_book(payload)):
         return None
 
-    genres = None
-    for book in DB:
-        if match(book["title"], current_book):
-            genres = book["genres"]
-            break
-
-    if not genres:
-        return None
-
+    genres = book['genres']
     item = "genres" if len(genres) > 1 else "genre"
-    msg = f"{current_book} has {item}: {', '.join(genres)}."
+    msg = f"{book['title']} has {item}: {', '.join(genres)}."
 
     return create_tts_response(msg)
 
