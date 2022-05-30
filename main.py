@@ -15,6 +15,8 @@ CHAPTER_PLACEHOLDER = "$$"
 with open("data/db.json") as f:
     DB = json.load(f)
 
+### Helpers ###
+
 
 def match(a: str, b: str):
     return a.lower().strip() == b.lower().strip()
@@ -85,8 +87,24 @@ def create_tts_response(text: str):
     return {"simpleResponse": {"textToSpeech": text, "displayText": text}}
 
 
+#### No parameters intents ###
+
+
+def available_books_handler(payload):
+    titles = [book["title"] for book in DB]
+    msg = f"You have the following books available: {', '.join(titles)}"
+
+    return create_tts_response(msg)
+
+
+def number_of_books_handler(payload):
+    # TODO: implement
+    return None
+
+#### Parameter intents ###
+
+
 def books_by_author_handler(payload):
-    # author
     if not (author := get_param(payload, 'author')):
         return None
 
@@ -99,7 +117,6 @@ def books_by_author_handler(payload):
 
 
 def play_book_author_handler(payload):
-    # author
     if not (author := get_param(payload, 'author')):
         return None
 
@@ -118,7 +135,6 @@ def play_book_author_handler(payload):
 
 
 def play_book_genre_handler(payload):
-    # genre
     if not (genre := get_param(payload, "genre")):
         return None
 
@@ -139,16 +155,7 @@ def play_book_genre_handler(payload):
     ]
 
 
-def number_of_chapters_handler(payload):
-    # current_book from context
-    if not (book := get_current_book(payload)):
-        return None
-
-    return create_tts_response(f"{book['title']} has {book['chapters']} chapters.")
-
-
 def author_of_book_title_handler(payload):
-    # book_title
     if not (book_title := get_param(payload, "book_title")):
         return None
 
@@ -167,7 +174,6 @@ def author_of_book_title_handler(payload):
 
 
 def present_books_with_genre_handler(payload):
-    # genre
     if not (genre := get_param(payload, "genre")):
         return None
 
@@ -183,7 +189,6 @@ def present_books_with_genre_handler(payload):
 
 
 def play_book_title_handler(payload):
-    # book_title
     if not (book_title := get_param(payload, "book_title")):
         return None
 
@@ -204,8 +209,65 @@ def play_book_title_handler(payload):
     ]
 
 
+def summarize_book_handler(payload):
+    if not (book_title := get_param(payload, 'book_title')):
+        return None
+
+    book_title = ensure_str(book_title)
+
+    summary = None
+    for b in DB:
+        if match(b["title"], book_title):
+            summary = b["summary"]
+            break
+
+    if not summary:
+        return None
+
+    return create_tts_response(f"Here is a summary of {book_title}: {summary}.")
+
+
 def book_genre_handler(payload):
-    # current_book from context
+    if not (book_title := get_param(payload, 'book_title')):
+        return None
+
+    book_title = ensure_str(book_title)
+
+    genres = None
+    for b in DB:
+        if match(b["title"], book_title):
+            genres = b["genres"]
+            break
+
+    if not genres:
+        return None
+
+    item = "genres" if len(genres) > 1 else "genre"
+    msg = f"{book_title} has {item}: {', '.join(genres)}."
+    return create_tts_response(msg)
+
+
+def start_reading_from_chapter_handler(payload):
+    # TODO: implement
+    return None
+
+
+def number_of_chapters_handler(payload):
+    # TODO: implement
+    return None
+
+
+### Context intents ###
+
+
+def number_of_chapters_context_handler(payload):
+    if not (book := get_current_book(payload)):
+        return None
+
+    return create_tts_response(f"{book['title']} has {book['chapters']} chapters.")
+
+
+def book_genre_context_handler(payload):
     if not (book := get_current_book(payload)):
         return None
 
@@ -216,9 +278,7 @@ def book_genre_handler(payload):
     return create_tts_response(msg)
 
 
-# TODO: change confusing name to 'skip_to_chapter_context' or something like that
-def start_reading_from_chapter_handler(payload):
-    # chapter_number
+def go_to_chapter_handler(payload):
     if not (book := get_current_book(payload)):
         return None
 
@@ -239,9 +299,9 @@ def start_reading_from_chapter_handler(payload):
 
 
 def progress_book_handler(payload):
-    # current_book
     if not (book := get_current_book(payload)):
         return None
+
     # TODO: we also need to know how far along the mp3 file is, again context?
     if not (minutes_played := payload["queryResult"]["parameters"].get("minutes_played", None)):
         return None
@@ -260,9 +320,9 @@ def progress_book_handler(payload):
 
 
 def time_to_finish_handler(payload):
-    # current_book
     if not (current_book := get_current_book(payload)):
         return None
+
     # TODO: we also need to know how far along the mp3 file is, again context?
     if not (minutes_played := payload["queryResult"]["parameters"].get("minutes_played", None)):
         return None
@@ -280,54 +340,43 @@ def time_to_finish_handler(payload):
     return create_tts_response(f"{book['title']} has {left} minutes left.")
 
 
-def unread_chapters_handler(payload):
-    # NO PARAMETERS
-
+def author_of_current_book_handler(payload):
+    # TODO: implement
     return None
 
 
-def available_books_handler(payload):
-    # NO PARAMETERS
-    titles = [book["title"] for book in DB]
-    msg = f"You have the following books available: {', '.join(titles)}"
-
-    return create_tts_response(msg)
-
-
-def summarize_book_handler(payload):
-    # book_title
-    if not (book_title := get_param(payload, 'book_title')):
-        return None
-
-    book_title = ensure_str(book_title)
-
-    summary = None
-    for b in DB:
-        if match(b["title"], book_title):  # Note: index to avoid data type mismatch (str/list)
-            summary = b["summary"]
-            break
-
-    if not summary:
-        return None
-
-    return create_tts_response(f"Here is a summary of {book_title}: {summary}.")
+def unread_chapters_handler(payload):
+    # TODO: implement
+    return None
 
 
 INTENTS = {
+    # No parameters intents
+    "available_books": available_books_handler,
+    "number_of_books": number_of_books_handler,
+
+    # Parameter intents
     "books_by_author": books_by_author_handler,
     "play_book_author": play_book_author_handler,
     "play_book_genre": play_book_genre_handler,
-    "number_of_chapters": number_of_chapters_handler,
     "author_of_book_title": author_of_book_title_handler,
     "present_books_with_genre": present_books_with_genre_handler,
     "play_book_title": play_book_title_handler,
     "book_genre": book_genre_handler,
     "start_reading_from_chapter": start_reading_from_chapter_handler,
+    "summarize_book": summarize_book_handler,
+    "number_of_chapters": number_of_chapters_handler,
+
+    # Context intents
+    "book_genre_context": book_genre_context_handler,
     "progress_book": progress_book_handler,
+    "author_of_current_book": author_of_current_book_handler,
+    "number_of_chapters_context": number_of_chapters_context_handler,
+    "go_to_chapter": go_to_chapter_handler,
+
+    # Not implemented
     "time_to_finish": time_to_finish_handler,
     "unread_chapters": unread_chapters_handler,
-    "available_books": available_books_handler,
-    "summarize_book": summarize_book_handler,
 }
 
 
