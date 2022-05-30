@@ -91,8 +91,10 @@ def play_book_genre_handler(payload):
     if not (genre := payload["queryResult"]["parameters"].get("genre", None)):
         return None
 
-    books = [book for book in DB if any(
-        match(genre, g) for g in book["genres"])]
+    books = [
+        book for book in DB
+        if any(match(genre, g) for g in book["genres"])
+    ]
 
     if len(books) == 0:
         return None
