@@ -216,7 +216,7 @@ def book_genre_handler(payload):
     return create_tts_response(msg)
 
 
-def go_to_chapter_handler(payload):
+def start_reading_from_chapter_handler(payload):
     # chapter_number
     session = payload['session']
     context_key = f'{session}/contexts/book_title_context'
@@ -344,7 +344,7 @@ INTENTS = {
     "present_books_with_genre": present_books_with_genre_handler,
     "play_book_title": play_book_title_handler,
     "book_genre": book_genre_handler,
-    "go_to_chapter": go_to_chapter_handler,
+    "start_reading_from_chapter": start_reading_from_chapter_handler,
     "progress_book": progress_book_handler,
     "time_to_finish": time_to_finish_handler,
     "unread_chapters": unread_chapters_handler,
