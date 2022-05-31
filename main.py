@@ -267,8 +267,11 @@ def start_reading_from_chapter_handler(payload):
         return None
 
     chapter = int(chapter_number)
-    if (chapter > book["chapters"]) or (chapter < 1):
+    if chapter < 1:
         return None
+
+    if chapter > book["chapters"]:
+        return create_tts_response(f"{book['title']} only has {book['chapters']} chapters!")
 
     # NOTE: currently we assume chapters range from 01-99!
     mp3_url = book["mp3url"].replace(CHAPTER_PLACEHOLDER, f"{chapter:02d}")
