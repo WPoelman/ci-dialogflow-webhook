@@ -98,8 +98,7 @@ def available_books_handler(payload):
 
 
 def number_of_books_handler(payload):
-    num_titles = len([book["title"] for book in DB])
-    msg = f"You have the following number of books available: {str(num_titles)}"
+    msg = f"You have the following number of books available: {len(DB)}"
 
     return create_tts_response(msg)
 
@@ -250,10 +249,21 @@ def book_genre_handler(payload):
 
 
 def start_reading_from_chapter_handler(payload):
-    if not (book := get_param(payload, "book_title")):
+    if not (book_title := get_param(payload, "book_title")):
         return None
 
     if not (chapter_number := get_param(payload, "chapter_number")):
+        return None
+
+    book_title = ensure_str(book_title)
+
+    book = None
+    for b in DB:
+        if match(b["title"], book_title):
+            book = b
+            break
+
+    if not book:
         return None
 
     chapter = int(chapter_number)
