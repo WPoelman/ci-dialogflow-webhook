@@ -254,7 +254,7 @@ def start_reading_from_chapter_handler(payload):
         return None
 
     if not (chapter_number := get_param(payload, "chapter_number")):
-        return Noneg
+        return None
 
     chapter = int(chapter_number)
     if (chapter > book["chapters"]) or (chapter < 1):
