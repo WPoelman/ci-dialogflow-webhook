@@ -98,8 +98,10 @@ def available_books_handler(payload):
 
 
 def number_of_books_handler(payload):
-    # TODO: implement
-    return None
+    num_titles = len([book["title"] for book in DB])
+    msg = f"You have the following number of books available: {str(num_titles)}"
+
+    return create_tts_response(msg)
 
 #### Parameter intents ###
 
@@ -248,13 +250,41 @@ def book_genre_handler(payload):
 
 
 def start_reading_from_chapter_handler(payload):
-    # TODO: implement
-    return None
+    if not (book := get_param(payload, "book_title")):
+        return None
+
+    if not (chapter_number := get_param(payload, "chapter_number")):
+        return Noneg
+
+    chapter = int(chapter_number)
+    if (chapter > book["chapters"]) or (chapter < 1):
+        return None
+
+    # NOTE: currently we assume chapters range from 01-99!
+    mp3_url = book["mp3url"].replace(CHAPTER_PLACEHOLDER, f"{chapter:02d}")
+
+    return [
+        create_tts_response(f"Now playing chapter {chapter}"),
+        create_mp3_response(mp3_url, book["title"], book["iconurl"]),
+    ]
 
 
 def number_of_chapters_handler(payload):
-    # TODO: implement
-    return None
+    if not (book_title := get_param(payload, 'book_title')):
+        return None
+
+    book_title = ensure_str(book_title)
+
+    num_chapters = None
+    for b in DB:
+        if match(b["title"], book_title):
+            num_chapters = b["chapters"]
+            break
+
+    if not num_chapters:
+        return None
+
+    return create_tts_response(f"{book_title} has {num_chapters} chapters.")
 
 
 ### Context intents ###
@@ -341,8 +371,12 @@ def time_to_finish_handler(payload):
 
 
 def author_of_current_book_handler(payload):
-    # TODO: implement
-    return None
+    if not (book := get_current_book(payload)):
+        return None
+
+    msg = f"{book['title']} has author: {book['author']}."
+
+    return create_tts_response(msg)
 
 
 def unread_chapters_handler(payload):
