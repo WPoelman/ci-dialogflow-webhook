@@ -4,6 +4,30 @@
             "author"
         ]
     },
+    "book_genre_context": {
+        "parameters": [
+            "current_book"
+        ]
+    },
+    "author_of_current_book": {
+        "parameters": []
+    },
+    "start_reading_from_chapter": {
+        "parameters": [
+            "book_title",
+            "chapter_number"
+        ]
+    },
+    "summarize_book": {
+        "parameters": [
+            "book_title"
+        ]
+    },
+    "number_of_chapters_context": {
+        "parameters": [
+            "current_book"
+        ]
+    },
     "play_book_author": {
         "parameters": [
             "author"
@@ -16,7 +40,7 @@
     },
     "number_of_chapters": {
         "parameters": [
-            "current_book"
+            "book_title"
         ]
     },
     "author_of_book_title": {
@@ -36,7 +60,7 @@
     },
     "book_genre": {
         "parameters": [
-            "current_book"
+            "book_title"
         ]
     },
     "go_to_chapter": {
@@ -59,10 +83,5 @@
     },
     "available_books": {
         "parameters": []
-    },
-    "summarize_book": {
-        "parameters": [
-            "book_title"
-        ]
     }
 }
